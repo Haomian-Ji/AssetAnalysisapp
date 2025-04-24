@@ -68,7 +68,28 @@ def logout():
 
 role = st.session_state.role
 
-logout_page = st.Page(logout, title="登出", icon=':material/logout:')
+logout_page = st.Page(logout, title="登出", icon=":material/logout:")
+settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
+analysis_page = st.Page("assetanalysis.py")
+
+admin_page = st.Page("admin.py", title="管理", icon=":material/logout:")
+
+accout_pages = [logout_page, settings_page]
+user_pages = [analysis_page]
+admin_pages = [admin_page]
+
+page_dict = {}
+if st.session_state.role == "用户":
+    page_dict["User"] = user_pages
+elif st.session_state.role == "管理员":
+    page_dict["Admin"] = admin_pages
+
+if len(page_dict) > 0:
+    pg = st.navigation({"Account": accout_pages} | page_dict)
+else:
+    pg = st.navigation([st.Page(login)])
+
+pg.run()
 
 
         
