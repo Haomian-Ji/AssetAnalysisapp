@@ -20,7 +20,7 @@ st.header("admin")
 try:
     (email_of_registered_user,
      username_of_registered,
-     name_of_registered_user) = authenticator.register_user(roles=["user","admin"])
+     name_of_registered_user) = authenticator.register_user(roles= ["user","admin"])
     if email_of_registered_user:
         st.success("用户注册成功")
         with open ('data/config.yaml','w') as file:
