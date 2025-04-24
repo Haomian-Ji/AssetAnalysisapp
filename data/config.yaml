@@ -1,0 +1,5 @@
+cookie:
+  name: some_cookie_name
+  key: some_key
+  expiry_days: 30
+credentials:
