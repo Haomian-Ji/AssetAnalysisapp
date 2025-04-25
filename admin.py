@@ -22,7 +22,7 @@ for key in users:
 # 自定义文件名（带日期示例）
 # default_filename = f"data_{selected_date.strftime('%Y%m%d')}.csv"
 
-default_filename = f"data_{username}.csv"
+default_filename = f"data/data_{username}.csv"
 filename = st.text_input("保存文件名", value=default_filename)
 
 
@@ -43,5 +43,5 @@ with st.form("multi_field_form"):
         if zongzichan and xianjin and gupiao and qiquan and efts :
             with open(filename, "a") as f:
                 writer = csv.writer(f)
-                writer.writerow([zongzichan, zongzichan])
+                writer.writerow([zongzichan, xianjin,gupiao,qiquan,efts,selected_date])
             st.success("保存成功")
