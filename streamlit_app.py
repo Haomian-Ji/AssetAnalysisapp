@@ -55,7 +55,7 @@ def reset(dict1:dict):
     st.session_state.role = None
 
 def logout():
-    authenticator = stauth.authenticator(
+    authenticator = stauth.Authenticate(
         config['credentials'],
         config['cookie']['name'],
         config['cookie']['key'],
@@ -86,7 +86,7 @@ elif st.session_state.role == "管理员":
     page_dict["Admin"] = admin_pages
 
 if len(page_dict) > 0:
-    pg = st.navigation({"Account": accout_pages} | page_dict)
+    pg = st.navigation(page_dict|{"Account": accout_pages} )
 else:
     pg = st.navigation([st.Page(login)])
 
