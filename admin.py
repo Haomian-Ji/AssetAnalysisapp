@@ -28,20 +28,31 @@ filename = st.text_input("保存文件名", value=default_filename)
 
 
 with st.form("multi_field_form"):
-    zongzichan = st.text_input("总资产")
-    xianjin = st.text_input("现金")
-    gupiao = st.text_input("股票")
-    qiquan = st.text_input("期权")
+        # 日期选择组件（默认今天）
+    selected_date = st.date_input("选择日期", value=datetime.datetime.now())
+
+    totalAssets = st.text_input("总资产")
+    cash = st.text_input("现金")
+    stocks = st.text_input("股票")
+    option = st.text_input("期权")
     efts = st.text_input("EFTs")
 
-    # 日期选择组件（默认今天）
-    selected_date = st.date_input("选择日期", value=datetime.datetime.now())
+    # 累计收益
+    cumulative = st.text_input("累计收益")
+    # 净资产
+    netAssets = st.text_input("净资产")
+    # 当日收益
+    dailyReturns = st.text_input("当日收益")
+
+
 
     submitted = st.form_submit_button("提交")
     
     if submitted:
-        if zongzichan and xianjin and gupiao and qiquan and efts :
+        if totalAssets and cash and stocks and option and efts :
             with open(filename, "a") as f:
                 writer = csv.writer(f)
-                writer.writerow([zongzichan, xianjin,gupiao,qiquan,efts,selected_date])
+                writer.writerow([selected_date,
+                                 totalAssets, cash,stocks,option,efts,
+                                 cumulative,netAssets,dailyReturns])
             st.success("保存成功")
