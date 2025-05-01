@@ -217,7 +217,7 @@ combined = pd.merge(
     how='inner'  # 只保留两者共有的日期
     
 )
-
+st.write(combined)
 # 标准化到相同起点（初始值设为 10000）
 combined_normalized = combined.apply(
     lambda x: (x / x.iloc[0]) * 10000
