@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-
 import streamlit as st
 from datetime import date, datetime, timedelta
 import calendar
-
 import yfinance as yf
 import plotly.express as px
 import os
