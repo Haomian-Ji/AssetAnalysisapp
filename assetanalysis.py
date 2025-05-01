@@ -188,7 +188,7 @@ local_data = pd.read_csv(
     parse_dates=['date'],
     usecols=['date', 'netAssets']
 ).set_index('date').sort_index()
-st.write(local_data)
+# st.write(local_data)
 # 第二部分：获取纳斯达克指数数据
 # =============================================
 # 定义时间范围（自动匹配本地数据的时间区间）
@@ -222,7 +222,7 @@ combined = pd.merge(
 combined_normalized = combined.apply(
     lambda x: (x / x.iloc[0]) * 10000
 )
-
+st.write(combined_normalized)
 # 第四部分：绘制对比曲线
 # =============================================
 plt.figure(figsize=(12, 6))
@@ -277,8 +277,9 @@ st.pyplot(plt)
 
 
 col1, col2 = st.columns(2)
+len1=combined_normalized.count()
 with col1:
-    latest_dji = combined_normalized.iloc[-1]['标普500']
+    latest_dji = combined_normalized.iloc[len1['标普500']-1]['标普500']
     # st.write(latest_dji)
     st.metric("标普500", 
                 f"{latest_dji:,.2f}",
