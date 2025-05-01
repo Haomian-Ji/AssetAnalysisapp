@@ -8,8 +8,6 @@ import yfinance as yf
 import plotly.express as px
 import os
 import matplotlib.dates as mdates
-
-
 from streamlit_calendar import calendar
 
 # ========== 数据存储 ==========
@@ -190,7 +188,7 @@ local_data = pd.read_csv(
     parse_dates=['date'],
     usecols=['date', 'netAssets']
 ).set_index('date').sort_index()
-
+st.write(local_data)
 # 第二部分：获取纳斯达克指数数据
 # =============================================
 # 定义时间范围（自动匹配本地数据的时间区间）
@@ -276,6 +274,25 @@ plt.show()
 
 
 st.pyplot(plt)
+
+
+col1, col2 = st.columns(2)
+with col1:
+    latest_dji = combined_normalized['标普500'].iloc[-1]
+    # st.write(latest_dji)
+    st.metric("标普500", 
+                f"{latest_dji:,.2f}",
+                delta=f"{combined_normalized['标普500'].pct_change()[-1]*100:.2f}%")
+
+with col2:
+    latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
+    # st.write(latest_ixic)
+
+    st.metric("纳斯达克", 
+                f"{latest_ixic:,.2f}",
+                delta=f"{combined_normalized['纳斯达克'].pct_change()[-1]*100:.2f}%")
+
+
 
 st.subheader("总资产走势")
 
