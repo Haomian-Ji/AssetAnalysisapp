@@ -7,6 +7,8 @@ from streamlit_authenticator.utilities import *
 
 import csv
 import datetime
+import os
+import pandas as pd
 
 # 打开用户文件
 with open('data/config.yaml') as file:
@@ -24,6 +26,11 @@ for key in users:
 
 default_filename = f"data/data_{username}.csv"
 filename = st.text_input("保存文件名", value=default_filename)
+
+# # 初始化数据文件
+if not os.path.exists(filename):
+    pd.DataFrame(columns=["date", "totalAssets", "cash","stocks","option","efts",
+                                 "cumulative","netAssets","dailyReturns"]).to_csv(filename, index=False)
 
 
 
