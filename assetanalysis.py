@@ -278,7 +278,7 @@ st.pyplot(plt)
 
 col1, col2 = st.columns(2)
 with col1:
-    latest_dji = combined_normalized['标普500'].iloc[-1]
+    latest_dji = combined_normalized.iloc[-1]['标普500']
     # st.write(latest_dji)
     st.metric("标普500", 
                 f"{latest_dji:,.2f}",
