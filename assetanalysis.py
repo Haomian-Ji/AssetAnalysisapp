@@ -217,12 +217,12 @@ combined = pd.merge(
     how='inner'  # 只保留两者共有的日期
     
 )
-st.write(combined)
+# st.write(combined)
 # 标准化到相同起点（初始值设为 10000）
 combined_normalized = combined.apply(
     lambda x: (x / x.iloc[0]) * 10000
 )
-st.write(combined_normalized)
+# st.write(combined_normalized)
 # 第四部分：绘制对比曲线
 # =============================================
 plt.figure(figsize=(12, 6))
@@ -276,22 +276,22 @@ plt.show()
 st.pyplot(plt)
 
 
-col1, col2 = st.columns(2)
-len1=combined_normalized.count()
-with col1:
-    latest_dji = combined_normalized.iloc[len1['标普500']-1]['标普500']
-    # st.write(latest_dji)
-    st.metric("标普500", 
-                f"{latest_dji:,.2f}",
-                delta=f"{combined_normalized['标普500'].pct_change()[-1]*100:.2f}%")
+# col1, col2 = st.columns(2)
+# len1=combined_normalized.count()
+# with col1:
+#     latest_dji = combined_normalized.iloc[len1['标普500']-1]['标普500']
+#     # st.write(latest_dji)
+#     st.metric("标普500", 
+#                 f"{latest_dji:,.2f}",
+#                 delta=f"{combined_normalized['标普500'].pct_change()[-1]*100:.2f}%")
 
-with col2:
-    latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
-    # st.write(latest_ixic)
+# with col2:
+#     latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
+#     # st.write(latest_ixic)
 
-    st.metric("纳斯达克", 
-                f"{latest_ixic:,.2f}",
-                delta=f"{combined_normalized['纳斯达克'].pct_change()[-1]*100:.2f}%")
+#     st.metric("纳斯达克", 
+#                 f"{latest_ixic:,.2f}",
+#                 delta=f"{combined_normalized['纳斯达克'].pct_change()[-1]*100:.2f}%")
 
 
 
