@@ -6,3 +6,9 @@ matplotlib
 yfinance
 streamlit_calendar 
 plotly
+pandas 
+numpy
+datetime 
+calendar
+yfinance
+os
