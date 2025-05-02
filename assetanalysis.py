@@ -40,17 +40,18 @@ option = dataframe["option"].loc[length["option"]-1]
 efts = dataframe["efts"].loc[length["efts"]-1]
 
 # 数据准备
-# labels = ['cash', '股票', '期权', 'EFTs']
+labels = ['cash', '股票', '期权', 'EFTs']
 sizes = [cash, stocks, option, efts]  # 各部分百分比（需确保总和为100）
 colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
 
 
 plt.pie(
     sizes, 
-    # labels=, 
+    labels=labels, 
     colors=colors,
     autopct=None,
     wedgeprops={'width': 0.4, 'edgecolor': 'white'}  # 宽度控制环形大小
+# code utf-8
 )
 
 st.pyplot(plt)
