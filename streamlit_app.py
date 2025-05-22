@@ -69,7 +69,8 @@ def logout():
 role = st.session_state.role
 
 logout_page = st.Page(logout, title="登出", icon=":material/logout:")
-analysis_page = st.Page("assetanalysis.py")
+analysis_page = st.Page("assetanalysis.py",title="资产分析")
+fundingdetails_page = st.Page("fundingdetails.py", title="资金详情")
 settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
 
 
@@ -78,7 +79,7 @@ createuser_page = st.Page("createuser.py", title="创建用户", icon=":material
 
 
 accout_pages = [logout_page, settings_page]
-user_pages = [analysis_page]
+user_pages = [analysis_page,fundingdetails_page]
 admin_pages = [admin_page, createuser_page]
 
 page_dict = {}

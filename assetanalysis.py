@@ -47,7 +47,7 @@ with tab1:
     efts = dataframe["efts"].loc[length["efts"]-1]
 
     # 数据准备
-    labels = ['cash', '股票', '期权', 'EFTs']
+    labels = ['cash', 'stocks', 'option', 'EFTs']
     sizes = [cash, stocks, option, efts]  # 各部分百分比（需确保总和为100）
     colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
 
