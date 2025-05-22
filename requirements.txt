@@ -9,6 +9,5 @@ plotly
 pandas 
 numpy
 datetime 
-calendar
 yfinance
 os

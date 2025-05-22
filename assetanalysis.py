@@ -8,7 +8,6 @@ import yfinance as yf
 import plotly.express as px
 import os
 import matplotlib.dates as mdates
-# import calendar
 
 plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows 系统常用
 plt.rcParams['font.sans-serif'] = ['PingFang SC']  # macOS 系统常用
