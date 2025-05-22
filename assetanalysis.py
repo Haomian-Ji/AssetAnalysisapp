@@ -13,7 +13,8 @@ plt.rcParams['font.sans-serif'] = ['PingFang SC']  # macOS 系统常用
 plt.rcParams['axes.unicode_minus'] = False
 
 # ========== 数据存储 ==========
-DATA_FILE = "data/data_hmji.csv"
+username=st.session_state.get('username')
+DATA_FILE = f"data/data_{username}.csv"
 
 
 
@@ -88,8 +89,6 @@ with tab1:
         )
 
 with tab2:
-
-
     st.subheader("走势分析")
 
     col21, col22 =st.columns(2)
@@ -110,7 +109,7 @@ with tab2:
 
 
     # 获取指数数据
-    @st.cache_data  # 缓存数据提高性能
+    # @st.cache_data  # 缓存数据提高性能
     def get_index_data(start, end):
         st.write(start)
         st.write(end)
@@ -146,63 +145,63 @@ with tab2:
             return pd.DataFrame()
 
 
-    # 主内容区
-    if update_button or not update_button:  # 初始自动加载
-        with st.spinner("正在获取数据..."):
-            df = get_index_data(start_date, end_date)
+    # # 主内容区
+    # if update_button or not update_button:  # 初始自动加载
+    #     with st.spinner("正在获取数据..."):
+    #         df = get_index_data(start_date, end_date)
 
-        if not df.empty:
+    #     if not df.empty:
 
 
-            # 绘制交互式图表
-            # st.subheader("历史走势")
-            fig = px.line(df, 
-                            x=df.index,
-                            y=df.columns,
-                            labels={"value": "", "variable": ""},
-                            title="收益率走势")
+    #         # 绘制交互式图表
+    #         # st.subheader("历史走势")
+    #         fig = px.line(df, 
+    #                         x=df.index,
+    #                         y=df.columns,
+    #                         labels={"value": "", "variable": ""},
+    #                         title="收益率走势")
             
-            fig.update_layout(hovermode="x unified",
-                                height=600,
-                                legend=dict(orientation="h", yanchor="bottom", y=1.02))
-            st.plotly_chart(fig, use_container_width=True)
+    #         fig.update_layout(hovermode="x unified",
+    #                             height=600,
+    #                             legend=dict(orientation="h", yanchor="bottom", y=1.02))
+    #         st.plotly_chart(fig, use_container_width=True)
 
-                # 显示最新数据
-            col1, col2 = st.columns(2)
-            with col1:
-                latest_dji = df.iloc[-1]["标普500"]
-                st.metric("标普500", 
-                            f"{latest_dji:,.2f}",
-                            delta=f"{df['标普500'].pct_change()[-1]*100:.2f}%")
+    #             # 显示最新数据
+    #         col1, col2 = st.columns(2)
+    #         with col1:
+    #             latest_dji = df.iloc[-1]["标普500"]
+    #             st.metric("标普500", 
+    #                         f"{latest_dji:,.2f}",
+    #                         delta=f"{df['标普500'].pct_change()[-1]*100:.2f}%")
             
-            with col2:
-                latest_ixic = df.iloc[-1]["纳斯达克"]
-                st.metric("纳斯达克", 
-                            f"{latest_ixic:,.2f}",
-                            delta=f"{df['纳斯达克'].pct_change()[-1]*100:.2f}%")
+    #         with col2:
+    #             latest_ixic = df.iloc[-1]["纳斯达克"]
+    #             st.metric("纳斯达克", 
+    #                         f"{latest_ixic:,.2f}",
+    #                         delta=f"{df['纳斯达克'].pct_change()[-1]*100:.2f}%")
             
             
-        else:
-            st.warning("没有获取到有效数据，请检查日期范围或网络连接")
+    #     else:
+    #         st.warning("没有获取到有效数据，请检查日期范围或网络连接")
 
 
-    # # 第一部分：读取本地 CSV 资产数据
-    # # =============================================
-    # # 读取 CSV 文件（假设列名为 timestamp 和 asset）
-    # # local_data = load_data().set_index('date').sort_index()
-    # local_data = pd.read_csv(
-    #     DATA_FILE,  # 替换为你的文件路径
-    #     parse_dates=['date'],
-    #     usecols=['date', 'netAssets']
-    # ).set_index('date').sort_index()
-    # # st.write(local_data)
-    # # 第二部分：获取纳斯达克指数数据
-    # # =============================================
-    # # 定义时间范围（自动匹配本地数据的时间区间）
-    # start_date = local_data.index.min().strftime('%Y-%m-%d')
-    # end_date = local_data.index.max().strftime('%Y-%m-%d')
+    # 第一部分：读取本地 CSV 资产数据
+    # =============================================
+    # 读取 CSV 文件（假设列名为 timestamp 和 asset）
+    # local_data = load_data().set_index('date').sort_index()
+    local_data = pd.read_csv(
+        DATA_FILE,  # 替换为你的文件路径
+        parse_dates=['date'],
+        usecols=['date', 'netAssets']
+    ).set_index('date').sort_index()
+    # st.write(local_data)
+    # 第二部分：获取纳斯达克指数数据
+    # =============================================
+    # 定义时间范围（自动匹配本地数据的时间区间）
+    start_date = local_data.index.min().strftime('%Y-%m-%d')
+    end_date = local_data.index.max().strftime('%Y-%m-%d')
 
-    # nasdaq = get_index_data(start_date,end_date)
+    nasdaq = get_index_data(start_date,end_date)
 
     # # 第三部分：数据对齐与标准化
     # # =============================================
@@ -276,7 +275,7 @@ with tab2:
     # col1, col2 = st.columns(2)
     # len1=combined_normalized.count()
     # with col1:
-    #     latest_dji = combined_normalized.iloc[len1['标普500']-1]['标普500']
+    #     latest_dji = combined_normalized.iloc[-1]['标普500']
     #     # st.write(latest_dji)
     #     st.metric("标普500", 
     #                 f"{latest_dji:,.2f}",
@@ -411,4 +410,5 @@ with tab4:
             }
         )
     selected_date = calendar(events=calendar_events, options=calendar_options)
+    
 

@@ -15,10 +15,11 @@ with open('data/config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 users = config['credentials']['usernames']
-for key in users:
-    username=key
-    st.write(key)
+# for key in users:
+#     username=key
+#     st.write(key)
 
+username = st.selectbox("选择一个用户", users)
 
 
 # 自定义文件名（带日期示例）

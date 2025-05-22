@@ -74,10 +74,12 @@ settings_page = st.Page("settings.py", title="设置", icon= ":material/settings
 
 
 admin_page = st.Page("admin.py", title="管理", icon=":material/logout:")
+createuser_page = st.Page("createuser.py", title="创建用户", icon=":material/logout:")
+
 
 accout_pages = [logout_page, settings_page]
 user_pages = [analysis_page]
-admin_pages = [admin_page]
+admin_pages = [admin_page, createuser_page]
 
 page_dict = {}
 if st.session_state.role == "用户":

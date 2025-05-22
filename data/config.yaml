@@ -14,3 +14,13 @@ credentials:
       roles:
       - user
       - admin
+    jwlou:
+      email: loujianwei@gmail.com
+      first_name: jianwei
+      last_name: lou
+      logged_in: false
+      password: $2b$12$3LpFOXy6Bn8IAOEj5hHBO.aAyejTTc6spkvr247lrDR3Bylvgzhte
+      password_hint: Qwer@1234
+      roles:
+      - user
+      - admin
