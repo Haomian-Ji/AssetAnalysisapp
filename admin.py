@@ -31,7 +31,10 @@ filename = st.text_input("保存文件名", value=default_filename)
 # # 初始化数据文件
 if not os.path.exists(filename):
     pd.DataFrame(columns=["date", "totalAssets", "cash","stocks","option","efts",
-                                 "cumulative","netAssets","dailyReturns"]).to_csv(filename, index=False)
+                                #  "cumulative",
+                                 "netAssets",
+                                #  "dailyReturns"
+                                 ]).to_csv(filename, index=False)
 
 
 
@@ -46,11 +49,11 @@ with st.form("multi_field_form"):
     efts = st.text_input("EFTs")
 
     # 累计收益
-    cumulative = st.text_input("累计收益")
+    # cumulative = st.text_input("累计收益")
     # 净资产
     netAssets = st.text_input("净资产")
     # 当日收益
-    dailyReturns = st.text_input("当日收益")
+    # dailyReturns = st.text_input("当日收益")
 
 
 
@@ -62,5 +65,8 @@ with st.form("multi_field_form"):
                 writer = csv.writer(f)
                 writer.writerow([selected_date,
                                  totalAssets, cash,stocks,option,efts,
-                                 cumulative,netAssets,dailyReturns])
+                                #  cumulative,
+                                 netAssets,
+                                #  dailyReturns
+                                ])
             st.success("保存成功")

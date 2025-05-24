@@ -111,8 +111,8 @@ with tab2:
     # 获取指数数据
     # @st.cache_data  # 缓存数据提高性能
     def get_index_data(start, end):
-        st.write(start)
-        st.write(end)
+        # st.write(start)
+        # st.write(end)
 
         try:
             # 定义指数代码
@@ -128,7 +128,7 @@ with tab2:
                 end=end,
                 group_by="ticker"
             )
-            st.write(data)
+            # st.write(data)
 
             # 处理数据格式
             df = pd.DataFrame()
@@ -203,91 +203,91 @@ with tab2:
 
     nasdaq = get_index_data(start_date,end_date)
 
-    # # 第三部分：数据对齐与标准化
-    # # =============================================
-    # # 合并两个数据集（按日期对齐）
-    # combined = pd.merge(
-    #     local_data,
-    #     nasdaq,
-    #     left_index=True,
-    #     right_index=True,
-    #     how='inner'  # 只保留两者共有的日期
+    # 第三部分：数据对齐与标准化
+    # =============================================
+    # 合并两个数据集（按日期对齐）
+    combined = pd.merge(
+        local_data,
+        nasdaq,
+        left_index=True,
+        right_index=True,
+        how='inner'  # 只保留两者共有的日期
         
-    # )
-    # # st.write(combined)
-    # # 标准化到相同起点（初始值设为 10000）
-    # combined_normalized = combined.apply(
-    #     lambda x: ((x - x.iloc[0])/ x.iloc[0]) 
-    # )
-    # # st.write(combined_normalized)
-    # # 第四部分：绘制对比曲线
-    # # =============================================
-    # plt.figure(figsize=(12, 6))
+    )
+    # st.write(combined)
+    # 标准化到相同起点（初始值设为 10000）
+    combined_normalized = combined.apply(
+        lambda x: ((x - x.iloc[0])/ x.iloc[0]) 
+    )
+    # st.write(combined_normalized)
+    # 第四部分：绘制对比曲线
+    # =============================================
+    plt.figure(figsize=(12, 6))
 
-    # # 绘制资产曲线
-    # plt.plot(
-    #     combined_normalized.index,
-    #     combined_normalized['netAssets'],
-    #     color='#3498db',
-    #     linewidth=2,
-    #     label='本地资产'
-    # )
+    # 绘制资产曲线
+    plt.plot(
+        combined_normalized.index,
+        combined_normalized['netAssets'],
+        color='#3498db',
+        linewidth=2,
+        label='本地资产'
+    )
 
-    # # 绘制纳斯达克曲线
-    # plt.plot(
-    #     combined_normalized.index,
-    #     combined_normalized['纳斯达克'],
-    #     color='#e74c3c',
-    #     linewidth=2,
-    #     linestyle='--',
-    #     label='纳斯达克指数'
-    # )
+    # 绘制纳斯达克曲线
+    plt.plot(
+        combined_normalized.index,
+        combined_normalized['纳斯达克'],
+        color='#e74c3c',
+        linewidth=2,
+        linestyle='--',
+        label='纳斯达克指数'
+    )
 
-    # # 绘制标普500曲线
-    # plt.plot(
-    #     combined_normalized.index,
-    #     combined_normalized['标普500'],
-    #     color='#ff99cc',
-    #     linewidth=2,
-    #     linestyle='--',
-    #     label='标普500'
-    # )
+    # 绘制标普500曲线
+    plt.plot(
+        combined_normalized.index,
+        combined_normalized['标普500'],
+        color='#ff99cc',
+        linewidth=2,
+        linestyle='--',
+        label='标普500'
+    )
 
-    # # 设置日期格式
-    # plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    # # plt.gca().xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-    # plt.gcf().autofmt_xdate()
+    # 设置日期格式
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    # plt.gca().xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    plt.gcf().autofmt_xdate()
 
-    # # # 添加图表元素
-    # # plt.title("资产与纳斯达克指数走势对比（基准化）", fontsize=14, pad=20)
-    # # plt.xlabel("日期", fontsize=12)
-    # # plt.ylabel("标准化值（初始值=100）", fontsize=12)
-    # # plt.grid(True, linestyle='--', alpha=0.6)
-    # # plt.legend(loc='upper left', frameon=False)
+    # # 添加图表元素
+    # plt.title("资产与纳斯达克指数走势对比（基准化）", fontsize=14, pad=20)
+    # plt.xlabel("日期", fontsize=12)
+    # plt.ylabel("标准化值（初始值=100）", fontsize=12)
+    # plt.grid(True, linestyle='--', alpha=0.6)
+    # plt.legend(loc='upper left', frameon=False)
 
-    # # 显示图表
-    # plt.tight_layout()
-    # plt.show()
+    # 显示图表
+    plt.tight_layout()
+    plt.show()
 
-    # st.pyplot(plt)
+    st.pyplot(plt)
 
 
-    # col1, col2 = st.columns(2)
-    # len1=combined_normalized.count()
-    # with col1:
-    #     latest_dji = combined_normalized.iloc[-1]['标普500']
-    #     # st.write(latest_dji)
-    #     st.metric("标普500", 
-    #                 f"{latest_dji:,.2f}",
-    #                 delta=f"{combined_normalized['标普500'].pct_change()[-1]*100:.2f}%")
+    col1, col2 = st.columns(2)
+    len1=combined_normalized.count()
+    with col1:
+        latest_dji = combined_normalized.iloc[-1]['标普500']
+        # st.write(latest_dji)
+        st.metric("标普500", 
+                    f"{latest_dji:,.2f}",
+                    delta=f"{combined_normalized['标普500'].pct_change()[-1]*100:.2f}%")
 
-    # with col2:
-    #     latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
-    #     # st.write(latest_ixic)
+    with col2:
+        latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
+        # st.write(latest_ixic)
 
-    #     st.metric("纳斯达克", 
-    #                 f"{latest_ixic:,.2f}",
-    #                 delta=f"{combined_normalized['纳斯达克'].pct_change()[-1]*100:.2f}%")
+        st.metric("纳斯达克", 
+                    f"{latest_ixic:,.2f}",
+                    delta=f"{combined_normalized['纳斯达克'].pct_change()[-1]*100:.2f}%")
 
 with tab3:
     st.subheader("总资产走势")
@@ -367,7 +367,12 @@ with tab4:
             "center": "title",
             "right": "dayGridMonth"
         },
-        "initialView": "dayGridMonth"  # 默认月视图
+        "initialView": "dayGridMonth",  # 默认月视图
+
+        "contentHeight": "auto",
+        "navLinks": False,  # 禁用导航跳转
+        "fixedWeekCount": False,  # 不固定周数
+        "handleWindowResize": True,  # 启用窗口大小自适应
     }
 
 
@@ -409,6 +414,6 @@ with tab4:
                 "color": color
             }
         )
-    selected_date = calendar(events=calendar_events, options=calendar_options)
+    selected_date = calendar(events=calendar_events, options=calendar_options,key="simple_calendar",)
     
 
