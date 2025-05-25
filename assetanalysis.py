@@ -331,7 +331,7 @@ with tab3:
 
     with col31:
         st.write("资产净值")
-        st.markdown(netAssets.iloc[-1],color = color)
+        st.write(netAssets.iloc[-1],color = color)
     with col32:
         st.write("当日收益")
         st.write(dailyReturn,color = color)
