@@ -1,13 +1,14 @@
+import matplotlib.font_manager
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 from datetime import date, datetime, timedelta
 from streamlit_calendar import calendar
-import yfinance as yf
 import plotly.express as px
 import matplotlib.dates as mdates
-
+import requeststockindex
+import matplotlib
 
 
 # plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows 系统常用
@@ -100,12 +101,14 @@ with tab2:
 
     col21, col22 =st.columns(2)
     with col21:
-        st.write("累计收益")
-        st.write(cumulative)
-
+        st.metric("累计收益", 
+            "累计收益",
+            delta=f"{cumulative}",label_visibility="hidden")
     with col22:
-        st.write("收益率")
-        st.write( f"{cumulativerate*100:.2f}%")
+
+        st.metric("收益率", 
+            "收益率",
+            delta=f"{cumulativerate*100:.2f}%",label_visibility="hidden")
 
     # 侧边栏设置
     with st.sidebar:
@@ -115,41 +118,7 @@ with tab2:
         update_button = st.button("更新数据")
 
 
-    # 获取指数数据
-    # @st.cache_data  # 缓存数据提高性能
-    def get_index_data(start, end):
-        # st.write(start)
-        # st.write(end)
-
-        try:
-            # 定义指数代码
-            indexes = {
-                "标普500": "^GSPC",
-                "纳斯达克": "^IXIC"
-            }
-
-            # 获取数据
-            data = yf.download(
-                list(indexes.values()),
-                start=start,
-                end=end,
-                group_by="ticker"
-            )
-            st.write(data)
-
-            # 处理数据格式
-            df = pd.DataFrame()
-            for name, ticker in indexes.items():
-                temp = data[ticker][['Close']].copy()
-                temp.columns = [name]
-                df = pd.concat([df, temp], axis=1)
-            
-            # st.write(df)
-            return df.dropna()
-        
-        except Exception as e:
-            st.error(f"数据获取失败: {str(e)}")
-            return pd.DataFrame()
+ 
 
 
     # # 主内容区
@@ -196,17 +165,38 @@ with tab2:
     # =============================================
     # 读取 CSV 文件（假设列名为 timestamp 和 asset）
     # local_data = load_data().set_index('date').sort_index()
+    # dataframe["date"]=pd.to_datetime(dataframe["date"], format="%Y-%m-%d")
+    # dataframe["date"]=dataframe["date"].dt.strftime("%Y-%m-%d")
     local_data = dataframe.set_index('date').sort_index()
-
+    
     # st.write(local_data)
     # 第二部分：获取纳斯达克指数数据
     # =============================================
     # 定义时间范围（自动匹配本地数据的时间区间）
-    start_date = local_data.index.min().strftime('%Y-%m-%d')
-    end_date = local_data.index.max().strftime('%Y-%m-%d')
+    start_date = local_data.index.min().strftime("%Y-%m-%d")
+    end_date = local_data.index.max().strftime("%Y-%m-%d")
 
-    nasdaq = get_index_data(start_date,end_date)
-    st.write(nasdaq)
+    nasdaq = requeststockindex.get_yd_index_data(start_date,end_date)
+    # st.write(nasdaq)
+    if nasdaq.empty :
+
+        sp500_day=requeststockindex.get_polygon_daydata("I:SPX",start_date,end_date).set_index('date').sort_index()
+        sp500_day = sp500_day.rename(columns={"close":"标普500"})
+
+        # st.write(sp500_day)
+        nasdaq_day=requeststockindex.get_polygon_daydata("I:COMP",start_date,end_date).set_index('date').sort_index()
+        nasdaq_day = nasdaq_day.rename(columns={"close":"纳斯达克"})
+
+        # st.write(nasdaq_day)
+        nasdaq = pd.merge(
+            sp500_day,
+            nasdaq_day,
+            left_index=True,
+            right_index=True,
+            how='inner'  # 只保留两者共有的日期
+            
+        )
+    # st.write(nasdaq)
 
     def draw_plot():
         # 第三部分：数据对齐与标准化
@@ -236,7 +226,7 @@ with tab2:
             combined_normalized['netAssets'],
             color='#3498db',
             linewidth=2,
-            label='本地资产'
+            label='Asset'
         )
 
         # 绘制纳斯达克曲线
@@ -246,7 +236,7 @@ with tab2:
             color='#e74c3c',
             linewidth=2,
             linestyle='--',
-            label='纳斯达克指数'
+            label='Nasdaq'
         )
 
         # 绘制标普500曲线
@@ -256,12 +246,11 @@ with tab2:
             color='#ff99cc',
             linewidth=2,
             linestyle='--',
-            label='标普500'
+            label='S&P 500'
         )
 
         # 设置日期格式
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-        # plt.gca().xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         plt.gcf().autofmt_xdate()
 
         # # 添加图表元素
@@ -269,7 +258,7 @@ with tab2:
         # plt.xlabel("日期", fontsize=12)
         # plt.ylabel("标准化值（初始值=100）", fontsize=12)
         # plt.grid(True, linestyle='--', alpha=0.6)
-        # plt.legend(loc='upper left', frameon=False)
+        plt.legend(loc='upper left', frameon=False)
 
         # 显示图表
         plt.tight_layout()
@@ -294,19 +283,16 @@ with tab2:
 
         col1, col2 = st.columns(2)
         with col1:
-            latest_gspc = combined_normalized.iloc[-1]['标普500']
-            # st.write(latest_dji)
+            latest_gspc = combined_normalized['标普500'].iloc[-1]
             st.metric("标普500", 
-                        f"{latest_gspc:,.2f}",
-                        delta=f"{combined_normalized['标普500'].pct_change()[-1]*100:.2f}%")
+                        "标普500",
+                        delta=f"{latest_gspc*100:.2f}%",label_visibility="hidden")
 
         with col2:
             latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
-            # st.write(latest_ixic)
-
             st.metric("纳斯达克", 
-                        f"{latest_ixic:,.2f}",
-                        delta=f"{combined_normalized['纳斯达克'].pct_change()[-1]*100:.2f}%")
+                       "纳斯达克",
+                        delta=f"{latest_ixic*100:.2f}%",label_visibility="hidden")
 
 
 
@@ -331,10 +317,10 @@ with tab3:
 
     with col31:
         st.write("资产净值")
-        st.write(netAssets.iloc[-1],color = color)
+        st.write(netAssets.iloc[-1])
     with col32:
         st.write("当日收益")
-        st.write(dailyReturn,color = color)
+        st.write(dailyReturn)
 
 
 
@@ -380,19 +366,16 @@ with tab3:
 
     st.pyplot(plt)
 
-
-
-
 with tab4:
     st.subheader("收益日历")
 
     dates = dataframe["date"]
     netAssets = local_data["netAssets"]
 
-    def get_monthreturn(selected_date):
+    def get_monthreturn(selecteddate):
 
-        yearnetAssets=netAssets.loc[netAssets.index.year == selected_date.year]
-        monthnetAssets=yearnetAssets.loc[yearnetAssets.index.month == selected_date.month]
+        yearnetAssets=netAssets.loc[netAssets.index.year == selecteddate.year]
+        monthnetAssets=yearnetAssets.loc[yearnetAssets.index.month == selecteddate.month]
 
         monthfirst = monthnetAssets.iloc[0]
         month_return = monthnetAssets.iloc[-1] - monthfirst
