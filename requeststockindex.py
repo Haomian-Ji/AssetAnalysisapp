@@ -13,13 +13,13 @@ def get_index_data(symbol):
     response = requests.get(url)
     return response.json()
 
-# 获取标普500数据
-sp500_data = get_index_data("I:SPX")
-print("S&P 500:", sp500_data)
+# # 获取标普500数据
+# sp500_data = get_index_data("I:SPX")
+# print("S&P 500:", sp500_data)
 
-# 获取纳斯达克综合指数数据
-nasdaq_data = get_index_data("I:COMP")
-print("Nasdaq Composite:", nasdaq_data)
+# # 获取纳斯达克综合指数数据
+# nasdaq_data = get_index_data("I:COMP")
+# print("Nasdaq Composite:", nasdaq_data)
 
 
 def get_polygon_data(symbol, start_timestamp, end_timestamp, timeframe="30/minute"):
@@ -87,9 +87,9 @@ def get_polygon_daydata(symbol, start_timestamp, end_timestamp, timeframe="1/day
     url = f"{base_url}/{symbol}/range/{timeframe}/{start_timestamp}/{end_timestamp}?adjusted=true&sort=asc&limit=50000&apiKey={POLYGON_KEY}&include_extended_hours=true"
     
     try:
-        print(f"正在请求数据: {url}")
+        # print(f"正在请求数据: {url}")
         response = requests.get(url)
-        print(f"API响应状态码: {response.status_code}")
+        # print(f"API响应状态码: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()

@@ -10,10 +10,11 @@ import matplotlib.dates as mdates
 import requeststockindex
 import matplotlib
 
-
 # plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows 系统常用
 # plt.rcParams['font.sans-serif'] = ['PingFang SC']  # macOS 系统常用
 # plt.rcParams['font.sans-serif'] = ['苹方-简']  # macOS 系统常用
+
+
 
 plt.rcParams['axes.unicode_minus'] = False
 
@@ -29,8 +30,10 @@ def save_data(df):
     df.to_csv(DATA_FILE, index=False)
 
 dataframe= load_data()
-lastcol= dataframe.iloc[-1]
-firstcol = dataframe.iloc[0]
+local_data = dataframe.set_index('date').sort_index()
+
+lastcol= local_data.iloc[-1]
+firstcol = local_data.iloc[0]
 
 
 tab1, tab2, tab3, tab4 = st.tabs(["资产总览", "走势分析","总资产走势","收益日历"])
@@ -38,21 +41,23 @@ with tab1:
     st.subheader("资产总览")
 
     if "totalAssets" in dataframe.columns:
-        totalasseits = lastcol["totalAssets"]
-        st.write("总资产",totalasseits)
+        totalAssets = lastcol["totalAssets"]
+        st.write("总资产",totalAssets)
 
-
-
-    #totalAssets,cash,stocks,option,efts,netAssets,
+    #totalAssets,cash,stocks,option,efts,
     col11, col12, col13, col14 = st.columns(4)
     cash = lastcol["cash"]
     stocks = lastcol["stocks"]
     option = lastcol["option"]
     efts = lastcol["efts"]
 
+    pct_cash = cash/ totalAssets
+    pct_stocks = stocks/ totalAssets
+    pct_option = option/ totalAssets
+    pct_efts = efts/ totalAssets
     # 数据准备
     labels = ['cash', 'stocks', 'option', 'EFTs']
-    sizes = [cash, stocks, option, efts]  # 各部分百分比（需确保总和为100）
+    sizes = [pct_cash, pct_stocks, pct_option,pct_efts]  # 各部分百分比（需确保总和为100）
     colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
 
 
@@ -60,7 +65,7 @@ with tab1:
         sizes, 
         labels=labels, 
         colors=colors,
-        autopct=None,
+        autopct='%1.2f%%',  # 显示百分比格式
         wedgeprops={'width': 0.4, 'edgecolor': 'white'}  # 宽度控制环形大小
     # code utf-8
     )
@@ -70,32 +75,51 @@ with tab1:
     with col11:
         st.write("现金")
         st.markdown(
-        f'<span style="color: #ff9999; font-weight: bold;">{cash}%</span>',
+        f'<span style="color: #ff9999; font-weight: bold;">{cash}</span>',
         unsafe_allow_html=True
         )
     with col12:
         st.write("股票")
         st.markdown(
-        f'<span style="color: #66b3ff; font-weight: bold;">{stocks}%</span>',
+        f'<span style="color: #66b3ff; font-weight: bold;">{stocks}</span>',
         unsafe_allow_html=True
         )
     with col13:
         st.write("期权")
         st.markdown(
-        f'<span style="color: #99ff99; font-weight: bold;">{option}%</span>',
+        f'<span style="color: #99ff99; font-weight: bold;">{option}</span>',
         unsafe_allow_html=True
         )
     with col14:
         st.write("EFTs")
         st.markdown(
-        f'<span style="color: #ffcc99; font-weight: bold;">{efts}%</span>',
+        f'<span style="color: #ffcc99; font-weight: bold;">{efts}</span>',
         unsafe_allow_html=True
         )
 
 with tab2:
-    st.subheader("走势分析")
-    lastnetAssets = lastcol["netAssets"]
-    firstnetassets = firstcol["netAssets"]
+    st.subheader("收益率走势")
+    # 选择周期
+    period = st.selectbox("周期", ["年初至今","月初至今"],label_visibility="hidden")
+    # st.write(period)
+
+    # 确定开始日期，默认为年初开始
+    yeardata=local_data.loc[local_data.index.year == datetime.today().year]
+    firstnetassets = yeardata["totalAssets"].iloc[0]
+    lastnetAssets = yeardata["totalAssets"].iloc[-1]
+    start_date = datetime.today().strftime("%Y-01-01")
+    end_date = datetime.today().strftime("%Y-%m-%d")
+    assetsdata= yeardata
+
+    # 月初至今，数据重新计算
+    if period == "月初至今":
+        monthdata=yeardata.loc[yeardata.index.month == datetime.today().month]
+        firstnetassets = monthdata["totalAssets"].iloc[0]
+        start_date = datetime.today().strftime("%Y-%m-01")
+        assetsdata = monthdata
+
+    # st.write(assetsdata)
+    # 显示收益及收益率
     cumulative =  lastnetAssets - firstnetassets
     cumulativerate = cumulative / firstnetassets
 
@@ -110,72 +134,7 @@ with tab2:
             "收益率",
             delta=f"{cumulativerate*100:.2f}%",label_visibility="hidden")
 
-    # 侧边栏设置
-    with st.sidebar:
-        st.header("设置时间")
-        start_date = st.date_input("起始日期", value=pd.to_datetime("2025-01-01"))
-        end_date = st.date_input("结束日期", value=pd.to_datetime("today"))
-        update_button = st.button("更新数据")
-
-
- 
-
-
-    # # 主内容区
-    # if update_button or not update_button:  # 初始自动加载
-    #     with st.spinner("正在获取数据..."):
-    #         df = get_index_data(start_date, end_date)
-
-    #     if not df.empty:
-
-
-    #         # 绘制交互式图表
-    #         # st.subheader("历史走势")
-    #         fig = px.line(df, 
-    #                         x=df.index,
-    #                         y=df.columns,
-    #                         labels={"value": "", "variable": ""},
-    #                         title="收益率走势")
-            
-    #         fig.update_layout(hovermode="x unified",
-    #                             height=600,
-    #                             legend=dict(orientation="h", yanchor="bottom", y=1.02))
-    #         st.plotly_chart(fig, use_container_width=True)
-
-    #             # 显示最新数据
-    #         col1, col2 = st.columns(2)
-    #         with col1:
-    #             latest_dji = df.iloc[-1]["标普500"]
-    #             st.metric("标普500", 
-    #                         f"{latest_dji:,.2f}",
-    #                         delta=f"{df['标普500'].pct_change()[-1]*100:.2f}%")
-            
-    #         with col2:
-    #             latest_ixic = df.iloc[-1]["纳斯达克"]
-    #             st.metric("纳斯达克", 
-    #                         f"{latest_ixic:,.2f}",
-    #                         delta=f"{df['纳斯达克'].pct_change()[-1]*100:.2f}%")
-            
-            
-    #     else:
-    #         st.warning("没有获取到有效数据，请检查日期范围或网络连接")
-
-
-    # 第一部分：读取本地 CSV 资产数据
-    # =============================================
-    # 读取 CSV 文件（假设列名为 timestamp 和 asset）
-    # local_data = load_data().set_index('date').sort_index()
-    # dataframe["date"]=pd.to_datetime(dataframe["date"], format="%Y-%m-%d")
-    # dataframe["date"]=dataframe["date"].dt.strftime("%Y-%m-%d")
-    local_data = dataframe.set_index('date').sort_index()
-    
-    # st.write(local_data)
-    # 第二部分：获取纳斯达克指数数据
-    # =============================================
-    # 定义时间范围（自动匹配本地数据的时间区间）
-    start_date = local_data.index.min().strftime("%Y-%m-%d")
-    end_date = local_data.index.max().strftime("%Y-%m-%d")
-
+    # 获取指数数据 
     nasdaq = requeststockindex.get_yd_index_data(start_date,end_date)
     # st.write(nasdaq)
     if nasdaq.empty :
@@ -196,6 +155,12 @@ with tab2:
             how='inner'  # 只保留两者共有的日期
             
         )
+    index_rate = nasdaq.apply(
+        lambda x: ((x - x.iloc[0])/ x.iloc[0]) 
+    )
+    assets_rate = assetsdata.apply(
+        lambda x: ((x - x.iloc[0])/ x.iloc[0]) 
+    )
     # st.write(nasdaq)
 
     def draw_plot():
@@ -203,27 +168,24 @@ with tab2:
         # =============================================
         # 合并两个数据集（按日期对齐）
         combined = pd.merge(
-            local_data,
-            nasdaq,
+            assets_rate,
+            index_rate,
             left_index=True,
             right_index=True,
             how='inner'  # 只保留两者共有的日期
+            # how = 'outer'
             
         )
         # st.write(combined)
-        # 标准化到相同起点（初始值设为 10000）
-        combined_normalized = combined.apply(
-            lambda x: ((x - x.iloc[0])/ x.iloc[0]) 
-        )
-        # st.write(combined_normalized)
+
         # 第四部分：绘制对比曲线
         # =============================================
         plt.figure(figsize=(12, 6))
 
         # 绘制资产曲线
         plt.plot(
-            combined_normalized.index,
-            combined_normalized['netAssets'],
+            combined.index,
+            combined['totalAssets'],
             color='#3498db',
             linewidth=2,
             label='Asset'
@@ -231,8 +193,8 @@ with tab2:
 
         # 绘制纳斯达克曲线
         plt.plot(
-            combined_normalized.index,
-            combined_normalized['纳斯达克'],
+            combined.index,
+            combined['纳斯达克'],
             color='#e74c3c',
             linewidth=2,
             linestyle='--',
@@ -241,8 +203,8 @@ with tab2:
 
         # 绘制标普500曲线
         plt.plot(
-            combined_normalized.index,
-            combined_normalized['标普500'],
+            combined.index,
+            combined['标普500'],
             color='#ff99cc',
             linewidth=2,
             linestyle='--',
@@ -266,34 +228,18 @@ with tab2:
 
         st.pyplot(plt)
 
-        # col1, col2, col3 = st.columns(3)
-        # with col1:
-        #     current_price = data['Close'][-1]
-        #     st.metric("当前价格", f"${current_price:,.2f}")
-        
-        # with col2:
-        #     day_change = (data['Close'][-1] - data['Close'][-2]) / data['Close'][-2] * 100
-        #     st.metric("单日涨跌幅", f"{day_change:+.2f}%")
-        
-        # with col3:
-        #     ytd_return = (data['Close'][-1] - data.loc[data.index.year == datetime.today().year]['Close'][0]) / \
-        #                  data.loc[data.index.year == datetime.today().year]['Close'][0] * 100
-        #     st.metric("年初至今回报", f"{ytd_return:+.2f}%")
-
-
-        col1, col2 = st.columns(2)
-        with col1:
-            latest_gspc = combined_normalized['标普500'].iloc[-1]
+        col221, col222 = st.columns(2)
+        with col221:
+            latest_gspc = combined['标普500'].iloc[-1]
             st.metric("标普500", 
                         "标普500",
                         delta=f"{latest_gspc*100:.2f}%",label_visibility="hidden")
 
-        with col2:
-            latest_ixic = combined_normalized.iloc[-1]["纳斯达克"]
+        with col222:
+            latest_ixic = combined.iloc[-1]["纳斯达克"]
             st.metric("纳斯达克", 
                        "纳斯达克",
                         delta=f"{latest_ixic*100:.2f}%",label_visibility="hidden")
-
 
 
     if nasdaq.empty :
@@ -306,7 +252,7 @@ with tab3:
 
     col31, col32 = st.columns(2)
     dates = dataframe['date']
-    netAssets = dataframe["netAssets"]
+    netAssets = dataframe["totalAssets"]
     if netAssets.count() >1:
         dailyReturn= netAssets.iloc[-1] - netAssets.iloc[-2]
     else:
@@ -323,14 +269,13 @@ with tab3:
         st.write(dailyReturn)
 
 
-
     # 创建画布
     plt.figure(figsize=(12, 6))
 
     # 绘制曲线
     plt.plot(
         dates, 
-        dataframe["netAssets"],
+        dataframe["totalAssets"],
         color='#2ecc71',   # 曲线颜色
         linewidth=2,       # 曲线粗细
         marker='o',        # 数据点标记
@@ -370,7 +315,9 @@ with tab4:
     st.subheader("收益日历")
 
     dates = dataframe["date"]
-    netAssets = local_data["netAssets"]
+    # st.write(dates)
+    netAssets = local_data["totalAssets"]
+    # st.write(netAssets)
 
     def get_monthreturn(selecteddate):
 
@@ -391,21 +338,8 @@ with tab4:
     with col42:
         st.write("收益率")
         st.write(f"{month_rate:+.2f}%")
-    
-    # 配置日历参数
-    calendar_options = {
-        "headerToolbar": {
-            "left": "today prev,next",
-            "center": "title",
-            "right": "dayGridMonth"
-        },
-        "initialView": "dayGridMonth",  # 默认月视图
 
-        "contentHeight": "auto",
-        "navLinks": False,  # 禁用导航跳转
-        "fixedWeekCount": False,  # 不固定周数
-        "handleWindowResize": True,  # 启用窗口大小自适应
-    }
+
 
     calendar_events = []
 
@@ -442,6 +376,41 @@ with tab4:
         )
     # 显示日历
 
-    selected_date = calendar(events=calendar_events, options=calendar_options,key="simple_calendar")
-    
+
+
+    # 配置日历参数
+    calendar_options = {
+        "headerToolbar": {
+            "left": "today prev,next",
+            "center": "title",
+            "right": "dayGridMonth"
+        },
+        "initialView": "dayGridMonth",  # 默认月视图
+
+        "contentHeight": "auto",
+        # "navLinks": False,  # 禁用导航跳转
+        "fixedWeekCount": False,  # 不固定周数
+        "handleWindowResize": True,  # 启用窗口大小自适应
+        "eventRenderWait": 100, # 延迟渲染
+        # "loading": "function(bool) { if(bool) { /* 显示加载状态 */ } }"
+        "height": "parent"
+
+    }
+
+    # 渲染日历
+    try:
+        result = calendar(
+            events=calendar_events, 
+            options=calendar_options,
+            key="main_calendar"
+        )
+    except Exception as e:
+        st.error(f"日历渲染失败: {str(e)}")
+
+
+
+
+
+
+
 
