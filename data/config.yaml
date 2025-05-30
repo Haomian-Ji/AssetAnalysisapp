@@ -12,7 +12,6 @@ credentials:
       password: $2b$12$4z9VnbzvhCCvga4kLctE4OMuafJtp8Vitr2YQVYkMu34W9k1Yd50G
       password_hint: Qwer@1234
       roles:
-      - user
       - admin
     jwlou:
       email: loujianwei@gmail.com
@@ -22,5 +21,13 @@ credentials:
       password: $2b$12$3LpFOXy6Bn8IAOEj5hHBO.aAyejTTc6spkvr247lrDR3Bylvgzhte
       password_hint: Qwer@1234
       roles:
-      - user
       - admin
+    test1:
+      email: xxx@gmail.com
+      first_name: test
+      last_name: ji
+      logged_in: false
+      password: $2b$12$TkGAvckYyne0nkgI5.bxJ.gQ1ewJxnSyFNF34Gl7lZDJAib7fidti
+      password_hint: Qwer@1234
+      roles:
+      - user

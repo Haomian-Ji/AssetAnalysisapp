@@ -30,7 +30,7 @@ filename = st.text_input("保存文件名", value=default_filename)
 
 # # 初始化数据文件
 if not os.path.exists(filename):
-    pd.DataFrame(columns=["date", "cash","stocks","option","efts"]).to_csv(filename, index=False)
+    pd.DataFrame(columns=["date", "totalAssets","cash","stocks","option","efts"]).to_csv(filename, index=False)
 
 
 
