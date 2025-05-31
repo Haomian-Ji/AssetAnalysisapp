@@ -30,6 +30,9 @@ def save_data(df):
     df.to_csv(DATA_FILE, index=False)
 
 dataframe= load_data()
+# dataframe['date'] = pd.to_datetime(dataframe['date']).dt.strftime("%Y-%m-%d")
+# save_data(dataframe)
+
 local_data = dataframe.set_index('date').sort_index()
 if dataframe.empty:
     st.write("数据为空")
@@ -109,14 +112,16 @@ else:
         lastnetAssets = yeardata["totalAssets"].iloc[-1]
         start_date = datetime.today().strftime("%Y-01-01")
         end_date = datetime.today().strftime("%Y-%m-%d")
-        assetsdata= yeardata
+        # 去除出入资金列
+        # assetsdata= yeardata["totalAssets"]
+        assetsdata= yeardata.drop(columns=["money","change"])
 
         # 月初至今，数据重新计算
         if period == "月初至今":
             monthdata=yeardata.loc[yeardata.index.month == datetime.today().month]
             firstnetassets = monthdata["totalAssets"].iloc[0]
             start_date = datetime.today().strftime("%Y-%m-01")
-            assetsdata = monthdata
+            assetsdata = monthdata.drop(columns=["money","change"])
 
         # st.write(assetsdata)
         # 显示收益及收益率
@@ -312,18 +317,23 @@ else:
         st.pyplot(plt)
 
     with tab4:
+        st.divider()
         st.subheader("收益日历")
 
-        dates = dataframe["date"]
-        # st.write(dates)
-        netAssets = local_data["totalAssets"]
+        selected = dataframe.loc[dataframe['money'].isnull()]
+
+
+        dates = selected["date"]
+        # st.write(local_data)
+        # 去除出入资金的行列
+        netAssets = local_data.loc[local_data['money'].isnull()]["totalAssets"]
+
         # st.write(netAssets)
 
         def get_monthreturn(selecteddate):
 
             yearnetAssets=netAssets.loc[netAssets.index.year == selecteddate.year]
             monthnetAssets=yearnetAssets.loc[yearnetAssets.index.month == selecteddate.month]
-
             monthfirst = monthnetAssets.iloc[0]
             month_return = monthnetAssets.iloc[-1] - monthfirst
             month_rate = month_return/ monthfirst * 100

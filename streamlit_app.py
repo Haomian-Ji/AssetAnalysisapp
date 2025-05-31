@@ -66,6 +66,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+
+
 # 用户配置文件路径
 USER_CONFIG_PATH = "data/config.yaml"
 
@@ -101,6 +104,12 @@ def main():
             
             st.markdown("<h1 class='page-title'>角色访问控制系统</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center'>请使用您的账户登录系统</p>", unsafe_allow_html=True)
+            # 隐藏默认导航
+            st.markdown("""
+                <style>
+                    .stSidebarNav { display: none; }
+                </style>
+            """, unsafe_allow_html=True)
             
             # 登录表单
             # name, authentication_status, username = authenticator.login(key='登录', location='main')
@@ -166,13 +175,13 @@ def main():
         # settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
 
 
-        admin_page = st.Page("admin.py", title="用户管理", icon=":material/settings:")
+        moneymanagement_page = st.Page("moneymanagement.py", title="资金管理", icon=":material/settings:")
         createuser_page = st.Page("createuser.py", title="创建用户", icon=":material/settings:")
 
 
         # accout_pages = [logout_page, settings_page]
         user_pages = [analysis_page,fundingdetails_page]
-        admin_pages = [admin_page, createuser_page]
+        admin_pages = [moneymanagement_page, createuser_page]
 
         # page_dict = {}
         # if st.session_state.role == "用户":
@@ -216,11 +225,8 @@ def main():
         pg.run()
     # 显示登录状态
     st.sidebar.write(f"登录状态: {'已登录' if st.session_state.get('authentication_status') else '未登录'}")
-
 # 运行主应用
 if __name__ == '__main__':
-    # 为了演示目的，导入pandas（实际viewer_page中需要）
-    import pandas as pd
     main()
 
 

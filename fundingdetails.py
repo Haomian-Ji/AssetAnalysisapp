@@ -15,6 +15,13 @@ def load_data():
 def save_data(df):
     df.to_csv(DATA_FILE, index=False)
 
-dataframe= load_data()
+df= load_data()
 
-st.write(dataframe)
+# selected = df.loc[dataframe['money']>0]
+# 删除缺失值
+df_dropped = df.dropna()        # 删除包含缺失值的行
+
+# 删除列
+df_dropped = df_dropped.drop(columns=["stocks","option","efts"])
+
+st.write(df_dropped)
