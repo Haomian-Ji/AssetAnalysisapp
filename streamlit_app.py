@@ -102,7 +102,7 @@ def main():
         with st.container():
             st.markdown("<div class='login-card'>", unsafe_allow_html=True)
             
-            st.markdown("<h1 class='page-title'>角色访问控制系统</h1>", unsafe_allow_html=True)
+            st.markdown("<h1 class='page-title'>韦德合伙人后台登录</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center'>请使用您的账户登录系统</p>", unsafe_allow_html=True)
             # 隐藏默认导航
             st.markdown("""
