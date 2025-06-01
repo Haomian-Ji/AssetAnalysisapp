@@ -334,6 +334,9 @@ else:
 
             yearnetAssets=netAssets.loc[netAssets.index.year == selecteddate.year]
             monthnetAssets=yearnetAssets.loc[yearnetAssets.index.month == selecteddate.month]
+            if monthnetAssets.isnull :
+                return 0, 0
+            
             monthfirst = monthnetAssets.iloc[0]
             month_return = monthnetAssets.iloc[-1] - monthfirst
             month_rate = month_return/ monthfirst * 100

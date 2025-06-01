@@ -71,7 +71,7 @@ with tab2:
         # 日期选择组件（默认今天）
         date = datetime.datetime.today()
         change = st.selectbox("变动类型",["入资","出资","分红"])
-        money = st.number_input("资金",max_value=cash)
+        money = st.number_input("资金")
         formdisabled = False
 
         if change in ["出资","分红"]:

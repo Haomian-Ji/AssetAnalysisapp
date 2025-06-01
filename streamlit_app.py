@@ -15,7 +15,7 @@ from streamlit_authenticator.utilities import *
 
 # 页面配置
 st.set_page_config(
-    page_title="基于角色的访问控制系统",
+    page_title="韦德合伙人后台登录",
     # page_icon="🔒",
     layout="centered",
     initial_sidebar_state="collapsed"
