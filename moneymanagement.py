@@ -55,9 +55,10 @@ with tab1:
 
 
 with tab2:
+
     df=pd.read_csv(default_filename, parse_dates=['date'])
-    oldcash = 0
-    oldtotalAssets =0
+    cash = 0
+    totalAssets =0
     if df.empty == False:
         totalAssets=df["totalAssets"].iloc[-1]
         cash = df["cash"].iloc[-1]
@@ -67,34 +68,29 @@ with tab2:
 
     st.write(f"总资产:({totalAssets})")
     st.write(f"现金:({cash})")
+    # 添加说明
+    st.caption("说明：出金和分红不得大于现金值。")
     with st.form("money_form"):
         # 日期选择组件（默认今天）
         date = datetime.datetime.today()
-        change = st.selectbox("变动类型",["入资","出资","分红"])
+        change=st.selectbox("变动类型",["入金","出金","分红"])
         money = st.number_input("资金")
-        formdisabled = False
-
-        if change in ["出资","分红"]:
-            if money > cash:
-                st.toast(f"最大值为{cash}")
-                formdisabled = True
-            else:
-                formdisabled =False
-        else:
-            formdisabled =False
-
-
-        submitted = st.form_submit_button("提交",disabled= formdisabled)
+        submitted = st.form_submit_button("提交")
     
         if submitted:
-            if money  :
-                newcash = 0
-                if change in ["出资","分红"]:
-                    newcash = cash - money
+            valid = True
+            newcash = 0
+            st.write(change)
+            if change in ["出金","分红"]:
+                if money > cash  :
+                    st.error("出金和分红不得大于现金值")
+                    valid =False
                 else:
-                    newcash = cash + money
+                    newcash = cash - money
+            else:
+                newcash = cash + money
                             
-
+            if valid:
                 newtotalAssets = newcash + stocks + option + efts
 
                 # 添加新行（索引自动递增）
@@ -112,5 +108,5 @@ with tab2:
                                     newtotalAssets, newcash,stocks,option,efts,money,change
 
                                     ])
-                st.success("保存成功")
+                st.success("操作成功")
                 st.write(f"变动后总资金为:({newtotalAssets}),现金为:({newcash})")
