@@ -119,7 +119,11 @@ else:
         # 月初至今，数据重新计算
         if period == "月初至今":
             monthdata=yeardata.loc[yeardata.index.month == datetime.today().month]
-            firstnetassets = monthdata["totalAssets"].iloc[0]
+            if monthdata.isnull:
+                firstnetassets = lastnetAssets
+                st.caption("当月暂时没数据")
+            else:
+                firstnetassets = monthdata["totalAssets"].iloc[0]
             start_date = datetime.today().strftime("%Y-%m-01")
             assetsdata = monthdata.drop(columns=["money","change"])
 
@@ -177,8 +181,8 @@ else:
                 index_rate,
                 left_index=True,
                 right_index=True,
-                how='inner'  # 只保留两者共有的日期
-                # how = 'outer'
+                # how='inner'  # 只保留两者共有的日期
+                how = 'outer'
                 
             )
             # st.write(combined)
