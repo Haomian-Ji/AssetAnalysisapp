@@ -5,8 +5,6 @@ import streamlit as st
 import yfinance as yf
 
 
-POLYGON_KEY="dmCM3JLodrhqftZrY6_67Hzl5BB7jLQL"
-API_KEY = "dmCM3JLodrhqftZrY6_67Hzl5BB7jLQL"
 
 def get_index_data(symbol):
     url = f"https://api.polygon.io/v2/aggs/ticker/{symbol}/prev?adjusted=true&apiKey={API_KEY}"
@@ -24,6 +22,8 @@ def get_index_data(symbol):
 
 def get_polygon_data(symbol, start_timestamp, end_timestamp, timeframe="30/minute"):
     """从Polygon获取30分钟K线数据"""
+    POLYGON_KEY = st.secrets["POLYGON_KEY"]
+
     if not POLYGON_KEY:
         print("错误: 未设置POLYGON_KEY环境变量")
         return None
@@ -78,6 +78,8 @@ def get_polygon_data(symbol, start_timestamp, end_timestamp, timeframe="30/minut
 
 def get_polygon_daydata(symbol, start_timestamp, end_timestamp, timeframe="1/day"):
     """从Polygon获取日线K线数据"""
+    POLYGON_KEY = st.secrets["POLYGON_KEY"]
+
     if not POLYGON_KEY:
         print("错误: 未设置POLYGON_KEY环境变量")
         return pd.DataFrame()
