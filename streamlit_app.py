@@ -4,7 +4,7 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 from streamlit_authenticator.utilities import *
-
+import base64
 
 # 连接数据库
 # conn = st.connection("snowflake")
@@ -66,8 +66,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# 将图片转换为base64
+def get_image_base64(path):
+    with open(path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
 
-
+# 获取base64图片数据（替换为你的图片路径）
+img_path = "logo_app.png"  # 👈 修改为你的图片路径
+img_base64 = get_image_base64(img_path)
 
 # 用户配置文件路径
 USER_CONFIG_PATH = "data/config.yaml"
@@ -100,16 +106,17 @@ def main():
     if not st.session_state.get("authentication_status"):
         # 登录卡片容器
         with st.container():
-            st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class='login-card'>
+                    <img src="data:image/png;base64,{img_base64}" alt="Your Image" style="width:100%">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
             
             st.markdown("<h1 class='page-title'>韦德合伙人后台登录</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center'>请使用您的账户登录系统</p>", unsafe_allow_html=True)
-            # 隐藏默认导航
-            st.markdown("""
-                <style>
-                    .stSidebarNav { display: none; }
-                </style>
-            """, unsafe_allow_html=True)
             
             # 登录表单
             # name, authentication_status, username = authenticator.login(key='登录', location='main')
