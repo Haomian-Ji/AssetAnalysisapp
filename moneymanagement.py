@@ -77,7 +77,7 @@ with tab2:
         submitted = st.form_submit_button("提交")
     
         if submitted:
-            if money > 0
+            if money > 0:
                 valid = True
                 newcash = 0
                 # st.write(change)
@@ -110,5 +110,5 @@ with tab2:
                                         ])
                     st.success("操作成功")
                     st.write(f"变动后总资金为:({newtotalAssets}),现金为:({newcash})")
-                else:
-                    st.error("请输入金额")
+            else:
+                st.error("请输入金额")
