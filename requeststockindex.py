@@ -5,21 +5,6 @@ import streamlit as st
 import yfinance as yf
 
 
-
-def get_index_data(symbol):
-    url = f"https://api.polygon.io/v2/aggs/ticker/{symbol}/prev?adjusted=true&apiKey={API_KEY}"
-    response = requests.get(url)
-    return response.json()
-
-# # 获取标普500数据
-# sp500_data = get_index_data("I:SPX")
-# print("S&P 500:", sp500_data)
-
-# # 获取纳斯达克综合指数数据
-# nasdaq_data = get_index_data("I:COMP")
-# print("Nasdaq Composite:", nasdaq_data)
-
-
 def get_polygon_data(symbol, start_timestamp, end_timestamp, timeframe="30/minute"):
     """从Polygon获取30分钟K线数据"""
     POLYGON_KEY = st.secrets["POLYGON_KEY"]

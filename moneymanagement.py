@@ -39,19 +39,18 @@ with tab1:
         submitted = st.form_submit_button("提交")
         
         if submitted:
-            if cash and stocks and option and efts :
-                totalAssets = cash + stocks + option + efts
+            totalAssets = cash + stocks + option + efts
 
 
-                with open(filename, "a") as f:
-                    writer = csv.writer(f)
-                    writer.writerow([selected_date,
-                                    totalAssets, cash,stocks,option,efts,
-                                    #  cumulative,
-                                    
-                                    #  dailyReturns
-                                    ])
-                st.success("保存成功")
+            with open(filename, "a") as f:
+                writer = csv.writer(f)
+                writer.writerow([selected_date,
+                                totalAssets, cash,stocks,option,efts,
+                                #  cumulative,
+                                
+                                #  dailyReturns
+                                ])
+            st.success("保存成功")
 
 
 with tab2:
@@ -78,35 +77,38 @@ with tab2:
         submitted = st.form_submit_button("提交")
     
         if submitted:
-            valid = True
-            newcash = 0
-            st.write(change)
-            if change in ["出金","分红"]:
-                if money > cash  :
-                    st.error("出金和分红不得大于现金值")
-                    valid =False
+            if money > 0
+                valid = True
+                newcash = 0
+                # st.write(change)
+                if change in ["出金","分红"]:
+                    if money > cash  :
+                        st.error("出金和分红不得大于现金值")
+                        valid =False
+                    else:
+                        newcash = cash - money
                 else:
-                    newcash = cash - money
-            else:
-                newcash = cash + money
-                            
-            if valid:
-                newtotalAssets = newcash + stocks + option + efts
+                    newcash = cash + money
+                                
+                if valid:
+                    newtotalAssets = newcash + stocks + option + efts
 
-                # 添加新行（索引自动递增）
-                # df.loc[len(df)] = [date.strftime("%Y-%m-%d"),newtotalAssets, newcash,stocks,option,efts,money,change]
+                    # 添加新行（索引自动递增）
+                    # df.loc[len(df)] = [date.strftime("%Y-%m-%d"),newtotalAssets, newcash,stocks,option,efts,money,change]
 
-                # 覆盖已有行
-                # df.loc[df['date'] == date.strftime("%Y-%m-%d"), 
-                #        ["totalAssets","cash","stocks","option","efts","money","change"]] = [newtotalAssets, newcash,stocks,option,efts,money,change]
-                
-                # df.to_csv(default_filename, index=False)
+                    # 覆盖已有行
+                    # df.loc[df['date'] == date.strftime("%Y-%m-%d"), 
+                    #        ["totalAssets","cash","stocks","option","efts","money","change"]] = [newtotalAssets, newcash,stocks,option,efts,money,change]
+                    
+                    # df.to_csv(default_filename, index=False)
 
-                with open(filename, "a") as f:
-                    writer = csv.writer(f)
-                    writer.writerow([date.strftime("%Y-%m-%d"),
-                                    newtotalAssets, newcash,stocks,option,efts,money,change
+                    with open(filename, "a") as f:
+                        writer = csv.writer(f)
+                        writer.writerow([date.strftime("%Y-%m-%d"),
+                                        newtotalAssets, newcash,stocks,option,efts,money,change
 
-                                    ])
-                st.success("操作成功")
-                st.write(f"变动后总资金为:({newtotalAssets}),现金为:({newcash})")
+                                        ])
+                    st.success("操作成功")
+                    st.write(f"变动后总资金为:({newtotalAssets}),现金为:({newcash})")
+                else:
+                    st.error("请输入金额")
