@@ -10,3 +10,4 @@ pandas
 numpy
 datetime 
 yfinance
+polygon-api-client
