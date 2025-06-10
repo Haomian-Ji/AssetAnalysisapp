@@ -25,8 +25,11 @@ def fetch_and_save_data(ticker, cash_amount, user, shares):
     # 获取股票数据
     try:
         # 获取股票当前价格
-        ticker_details = client.get_ticker_details(ticker)
-        current_price = ticker_details.last_price
+        ticker_details = client.get_previous_close_agg(
+            ticker, 
+            adjusted="true",
+            )
+        current_price = ticker_details["results"][0]["c"]
         
         # 准备数据行
         data_row = f"{today},{cash_amount + current_price*shares},{cash_amount},0.0,0.0,{current_price*shares}"
