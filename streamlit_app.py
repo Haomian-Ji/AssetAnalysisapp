@@ -179,7 +179,7 @@ def main():
         # logout_page = st.Page(logout, title="登出", icon=":material/logout:")
         analysis_page = st.Page("assetanalysis.py",title="资产分析")
         fundingdetails_page = st.Page("fundingdetails.py", title="资金详情")
-        # settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
+        settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
 
 
         moneymanagement_page = st.Page("moneymanagement.py", title="资金管理", icon=":material/settings:")
@@ -187,24 +187,8 @@ def main():
 
 
         # accout_pages = [logout_page, settings_page]
-        user_pages = [analysis_page,fundingdetails_page]
+        user_pages = [analysis_page,fundingdetails_page,settings_page]
         admin_pages = [moneymanagement_page, createuser_page]
-
-        # page_dict = {}
-        # if st.session_state.role == "用户":
-        #     page_dict["User"] = user_pages
-        # elif st.session_state.role == "管理员":
-        #     page_dict["Admin"] = admin_pages
-
-        # if len(page_dict) > 0:
-        #     pg = st.navigation(page_dict|{"Account": accout_pages} )
-        # else:
-        #     pg = st.navigation([st.Page(login)])
-
-        # pg.run()
-
-
-
 
         
         # 在侧边栏显示用户信息
