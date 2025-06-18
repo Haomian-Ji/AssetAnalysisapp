@@ -9,6 +9,8 @@ import plotly.express as px
 import matplotlib.dates as mdates
 import requeststockindex
 import matplotlib
+from matplotlib.ticker import FuncFormatter
+
 
 # plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows 系统常用
 # plt.rcParams['font.sans-serif'] = ['PingFang SC']  # macOS 系统常用
@@ -28,6 +30,13 @@ def load_data():
 
 def save_data(df):
     df.to_csv(DATA_FILE, index=False)
+
+# 定义百分比格式化函数
+def to_percent(y, _):
+    return f"{y*100:.1f}%"  # 格式化为1位小数+百分号
+
+
+
 
 dataframe= load_data()
 # dataframe['date'] = pd.to_datetime(dataframe['date']).dt.strftime("%Y-%m-%d")
@@ -119,7 +128,8 @@ else:
         # 月初至今，数据重新计算
         if period == "月初至今":
             monthdata=yeardata.loc[yeardata.index.month == datetime.today().month]
-            if monthdata.isnull:
+            # st.write(monthdata)
+            if monthdata.empty:
                 firstnetassets = lastnetAssets
                 st.caption("当月暂时没数据")
             else:
@@ -191,10 +201,18 @@ else:
             # =============================================
             plt.figure(figsize=(12, 6))
 
+
+
+            # 转换为 pandas Series 并插值填充缺失值
+            s = pd.Series(combined['totalAssets'], index=combined.index)
+            s_interp = s.interpolate(method='linear')  # 线性插值
+
             # 绘制资产曲线
             plt.plot(
-                combined.index,
-                combined['totalAssets'],
+                # combined.index,
+                # combined['totalAssets'],
+                s_interp.index, 
+                s_interp.values,
                 color='#3498db',
                 linewidth=2,
                 label='Asset'
@@ -222,7 +240,13 @@ else:
 
             # 设置日期格式
             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+
             plt.gcf().autofmt_xdate()
+            plt.xticks([combined.index[0], combined.index[-1]])  # 只显示首尾日期
+
+            # 应用格式化器到y轴
+            formatter = FuncFormatter(to_percent)
+            plt.gca().yaxis.set_major_formatter(formatter)
 
             # # 添加图表元素
             # plt.title("资产与纳斯达克指数走势对比（基准化）", fontsize=14, pad=20)
@@ -338,7 +362,7 @@ else:
 
             yearnetAssets=netAssets.loc[netAssets.index.year == selecteddate.year]
             monthnetAssets=yearnetAssets.loc[yearnetAssets.index.month == selecteddate.month]
-            if monthnetAssets.isnull :
+            if monthnetAssets.empty :
                 return 0, 0
             
             monthfirst = monthnetAssets.iloc[0]

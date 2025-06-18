@@ -4,7 +4,7 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 from streamlit_authenticator.utilities import *
-
+import base64
 
 # 连接数据库
 # conn = st.connection("snowflake")
@@ -66,8 +66,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# 将图片转换为base64
+def get_image_base64(path):
+    with open(path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
 
-
+# 获取base64图片数据（替换为你的图片路径）
+img_path = "logo_app.png"  # 👈 修改为你的图片路径
+img_base64 = get_image_base64(img_path)
 
 # 用户配置文件路径
 USER_CONFIG_PATH = "data/config.yaml"
@@ -100,16 +106,17 @@ def main():
     if not st.session_state.get("authentication_status"):
         # 登录卡片容器
         with st.container():
-            st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class='login-card'>
+                    <img src="data:image/png;base64,{img_base64}" alt="Your Image" style="width:100%">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
             
             st.markdown("<h1 class='page-title'>韦德合伙人后台登录</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center'>请使用您的账户登录系统</p>", unsafe_allow_html=True)
-            # 隐藏默认导航
-            st.markdown("""
-                <style>
-                    .stSidebarNav { display: none; }
-                </style>
-            """, unsafe_allow_html=True)
             
             # 登录表单
             # name, authentication_status, username = authenticator.login(key='登录', location='main')
@@ -172,7 +179,7 @@ def main():
         # logout_page = st.Page(logout, title="登出", icon=":material/logout:")
         analysis_page = st.Page("assetanalysis.py",title="资产分析")
         fundingdetails_page = st.Page("fundingdetails.py", title="资金详情")
-        # settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
+        settings_page = st.Page("settings.py", title="设置", icon= ":material/settings:")
 
 
         moneymanagement_page = st.Page("moneymanagement.py", title="资金管理", icon=":material/settings:")
@@ -180,24 +187,8 @@ def main():
 
 
         # accout_pages = [logout_page, settings_page]
-        user_pages = [analysis_page,fundingdetails_page]
+        user_pages = [analysis_page,fundingdetails_page,settings_page]
         admin_pages = [moneymanagement_page, createuser_page]
-
-        # page_dict = {}
-        # if st.session_state.role == "用户":
-        #     page_dict["User"] = user_pages
-        # elif st.session_state.role == "管理员":
-        #     page_dict["Admin"] = admin_pages
-
-        # if len(page_dict) > 0:
-        #     pg = st.navigation(page_dict|{"Account": accout_pages} )
-        # else:
-        #     pg = st.navigation([st.Page(login)])
-
-        # pg.run()
-
-
-
 
         
         # 在侧边栏显示用户信息
