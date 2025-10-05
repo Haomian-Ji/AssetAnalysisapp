@@ -1,5 +1,7 @@
 .streamlit/secrets.toml
 data/
+etf_prices.csv
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
